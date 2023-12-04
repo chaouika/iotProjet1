@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block i %}
+{% load static %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="dashboard">
+
+
+    <div class="show-row">
+        <form method="post" id="my-form">
+            {% csrf_token %}
+            {{ form }}
+        </form>
+    </div>
+
+    <div class="sensor-info">
+        <div class="sensor-data">
+
+            <div class="sensor-property" style=" margin-right: 20px;">
+                    <img id="Temperature-logo" src="{% static 'images/temperature.png' %}" alt="Temperature Image">
+
+                <div class="details">
+                <span class="temp" >Temperature {{ valeurs.temp }}°C</span>
+
+                <span> {{ valeurs.date }}</span>
+                </div>
+
+            </div>
+            <div class="sensor-property">
+                <img id="Humidity-logo" src="{% static 'images/hum.png' %}" alt="Humidity Image">
+
+                <div class="details">
+                <span class="temp">Humidity {{ valeurs.hum }}%</span>
+                <span> {{ valeurs.date }}</span>
+            </div>
+                            </div>
+
+
+        </div>
+    </div>
+
+    <!--<button id='csv'>Télecharger csv</button>-->
+</div>
+
+<script>
+    var selectEl = $('#mon_select');
+
+    selectEl.change(function () {
+        $('#my-form').submit();
+    });
+
+    var downloadButton = document.getElementById('csv');
+    downloadButton.addEventListener('click', function () {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/DHT/download_csv/', true);
+        xhr.responseType = 'blob';
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var url = window.URL.createObjectURL(xhr.response);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'model_values.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        };
+        xhr.send();
+    });
+</script>
+{% endblock i %}
